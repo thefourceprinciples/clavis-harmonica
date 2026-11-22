@@ -5,7 +5,7 @@ from clavis_harmonica.parser import parse_formula
 
 
 def test_group_phase_beats_random_baseline():
-    """Falsifier #1: Intra-family modal similarity must exceed random group-to-pitch mappings by > 3 sigma."""
+    """Falsifier #1: Intra-family modal similarity must exceed random element-to-pitch mappings by > 3 sigma."""
     engine = HTEMaterialEngine()
     families = {
         "halides": ["NaCl", "KCl", "NaBr", "CsI"],
@@ -28,7 +28,7 @@ def test_group_phase_beats_random_baseline():
     ]
     real_mean = float(np.mean(real_scores))
 
-    # Null baseline: randomly assign IUPAC groups 1..18 to pitch classes 0..11
+    # Null baseline: randomly assign atomic numbers Z=1..118 to pitch classes 0..11
     rng = np.random.default_rng(42)
     mode_list = list(MODES.values())
     parsed_families = {
@@ -38,15 +38,15 @@ def test_group_phase_beats_random_baseline():
 
     null_means = []
     for _ in range(200):
-        rand_grp_to_pc = {g: int(rng.integers(0, 12)) for g in range(1, 19)}
-        rand_grp_to_pc[0] = 0
+        rand_z_to_pc = {z: int(rng.integers(0, 12)) for z in range(1, 119)}
+        rand_z_to_pc[0] = 0
         null_scores = []
         for parsed_members in parsed_families.values():
             maps = []
             for nodes in parsed_members:
                 raw_h = np.zeros(12, dtype=float)
                 for n in nodes:
-                    raw_h[rand_grp_to_pc[n.group]] += n.weight
+                    raw_h[rand_z_to_pc[n.Z]] += n.weight
                 h = raw_h / raw_h.sum()
                 hm = np.zeros((12, len(mode_list)), dtype=float)
                 for t in range(12):
