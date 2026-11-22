@@ -4,12 +4,12 @@ from .elements import ElementNode, build_element_node
 
 
 def parse_formula(formula: str) -> List[ElementNode]:
-    """Parses chemical formulas (including grouped parentheses like Ca(OH)2) into ElementNodes."""
+    """Parses chemical formulas (including grouped parentheses like Ca(OH)2 and E0) into ElementNodes."""
     cleaned = formula.replace(" ", "")
     if not cleaned:
         raise ValueError("Formula cannot be empty.")
 
-    tokens = re.findall(r"[A-Z][a-z]?\d*|\d+\.\d+|\d+|\(|\)", cleaned)
+    tokens = re.findall(r"E0|[A-Z][a-z]?|\d+\.\d+|\d+|\(|\)", cleaned)
     stack: List[Dict[str, float]] = [{}]
     i = 0
 
@@ -29,7 +29,7 @@ def parse_formula(formula: str) -> List[ElementNode]:
                 i += 1
             for el, cnt in group.items():
                 stack[-1][el] = stack[-1].get(el, 0.0) + cnt * mult
-        elif re.match(r"^[A-Z][a-z]?\d*$", tok):
+        elif re.match(r"^(?:E0|[A-Z][a-z]?)$", tok):
             el = tok
             i += 1
             mult = 1.0
