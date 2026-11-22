@@ -1,5 +1,4 @@
 import numpy as np
-from clavis_harmonica.elements import ELEMENT_DATA
 from clavis_harmonica.engine import HTEMaterialEngine
 from clavis_harmonica.modes import MODES, score_modal_hypothesis
 from clavis_harmonica.parser import parse_formula
@@ -40,7 +39,7 @@ def test_group_phase_beats_random_baseline():
     null_means = []
     for _ in range(200):
         rand_grp_to_pc = {g: int(rng.integers(0, 12)) for g in range(1, 19)}
-        rand_grp_to_pc = 0
+        rand_grp_to_pc[0] = 0
         null_scores = []
         for parsed_members in parsed_families.values():
             maps = []
@@ -76,6 +75,7 @@ def test_element_zero_substrate_boundary():
     """Falsifier #3: Element-0 acts strictly as null-reference substrate (Z=0, pi=0, omega=0)."""
     engine = HTEMaterialEngine()
     res = engine.analyze_formula("E0", "group")
-    assert res.nodes.Z == 0
-    assert res.nodes.pi_group == 0
-    assert res.nodes.omega == 0
+    node = res.nodes[0]
+    assert node.Z == 0
+    assert node.pi_group == 0
+    assert node.omega == 0
